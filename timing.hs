@@ -15,15 +15,21 @@ main = do
 
     _  <- hGetLine j
     print "egg"
-    peaks <- allPeaks (timeRun i j) []
-    print peaks
+    allPeaks (timeRun i j) []
+
+--    print peaks
 
 
 timeRun sin sout test = do
     hPutStrLn sin test
     start <- getTime Monotonic
     _ <- hGetLine sout
-    _ <- hGetLine sout
+    f <- hGetLine sout
+    if f == "Welcome." 
+        then 
+            print test
+            else
+                return ()
     end <- getTime Monotonic
     let diff = timeSpecAsNanoSecs $ diffTimeSpec start end
     return diff
@@ -38,4 +44,10 @@ findPeak timings =
     elemIndex (maximum timings) timings
 
 allPeaks test current =
-    fromJust (findPeak (genTimings (test) current))
+    do
+        next <- fromJust . findPeak <$> genTimings test current
+        print next
+        allPeaks test (current++[next]) 
+
+
+
