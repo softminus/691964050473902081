@@ -12,9 +12,9 @@ main = do
     hSetBuffering i NoBuffering
     hSetBuffering j NoBuffering
 
-    l <- hGetLine j
-    putStrLn $ "initial snarfed is: " ++ l
-    ( genTimings (timeRun i j) [])
+    _  <- hGetLine j
+    timings <-genTimings (timeRun i j) []
+    print timings 
 
 
 timeRun sin sout test = do
@@ -23,11 +23,7 @@ timeRun sin sout test = do
     _ <- hGetLine sout
     _ <- hGetLine sout
     end <- getTime Monotonic
-    --fuck <- hGetLine sout
-    -- putStrLn $ "fuck you " ++ fuck
-
     let diff = timeSpecAsNanoSecs $ diffTimeSpec start end
-    print diff
     return diff
 
 
@@ -37,7 +33,7 @@ makeGuess known full unknown  =
 
 
 genTimings test sofar =
-     mapM (test . makeGuess sofar 5) $ [0..9]
+    mapM (test . makeGuess sofar 5) $ [0..9]
 
 
 
