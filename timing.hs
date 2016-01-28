@@ -38,4 +38,4 @@ findPeak timings =
     elemIndex (maximum timings) timings
 
 allPeaks test current =
-    fromJust (findPeak (genTimings (test current)))
+    fromJust (findPeak (genTimings (test) current))
