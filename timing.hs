@@ -24,7 +24,8 @@ timeRun sin sout test = do
 
 
 
-digitsToInt digits = foldl' add 0 where add acc d = 10 * acc + d
+digitsToInt digits = foldl add 0 digits  where add acc d = 10 * acc + d
 
 makeGuess known unknown full = 
+    digitsToInt (known ++ [unknown] ++ replicate (full - (length known) - 1) 0 )
 
