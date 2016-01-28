@@ -1,3 +1,4 @@
+import Data.Char
 import Control.Exception
 import Control.Concurrent
 import System.Process 
@@ -24,8 +25,10 @@ timeRun sin sout test = do
 
 
 
-digitsToInt digits = foldl add 0 digits  where add acc d = 10 * acc + d
 
-makeGuess known unknown full = 
-    digitsToInt (known ++ [unknown] ++ replicate (full - (length known) - 1) 0 )
+makeGuess known full unknown  =
+    map intToDigit $ known ++ [unknown] ++ replicate (full - (length known) - 1) 0
+
+findIt sofar =
+    map (makeGuess sofar 5) [0..9] 
 
