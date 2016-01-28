@@ -1,5 +1,6 @@
 import Debug.Trace
 import Data.Char
+import Data.List
 import Control.Exception
 import Control.Concurrent
 import System.Process 
@@ -13,8 +14,9 @@ main = do
     hSetBuffering j NoBuffering
 
     _  <- hGetLine j
-    timings <-genTimings (timeRun i j) []
-    print timings 
+    print "egg"
+    peaks <- allPeaks (timeRun i j) []
+    print peaks
 
 
 timeRun sin sout test = do
@@ -26,15 +28,14 @@ timeRun sin sout test = do
     let diff = timeSpecAsNanoSecs $ diffTimeSpec start end
     return diff
 
-
-
 makeGuess known full unknown  =
     map intToDigit $ known ++ [unknown] ++ replicate (full - (length known) - 1) 0
 
-
 genTimings test sofar =
-    mapM (test . makeGuess sofar 5) $ [0..9]
+     mapM (test . makeGuess sofar 5) $ [0..9]
 
+findPeak timings =
+    elemIndex (maximum timings) timings
 
-
-
+allPeaks test current =
+    fromJust (findPeak (genTimings (test current)))
