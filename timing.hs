@@ -47,8 +47,8 @@ timeDUT sin sout known candidate =
 
      -- here, we use use Right [Int] to represent latency results and Left Int to
      -- represent the process under test quitting
-acc test prev digit =
-    prev >>= \x -> case x of
+acc test prev digit=
+    case prev of
         Left i  -> return $ Left i
         Right i -> test digit >>= \y -> case y of
             Nothing ->  return $ Left digit
@@ -60,9 +60,8 @@ acc test prev digit =
 --genTimings test known =
  --   genTimings' (test . makeGuess known 5) known 
 
---genTimings' test known =
---     foldM (acc test) (Right []) [0..9]
---     mapM (test . makeGuess known 5) $ [0..9]
+genTimings' test known =
+    foldM (acc test)  ((Right []))  [0..9]
 
 
 
