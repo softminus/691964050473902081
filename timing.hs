@@ -42,7 +42,9 @@ makeGuess known full unknown =
     map intToDigit $ known ++ [unknown] ++ replicate (full - (length known) - 1) 0
 
 timeDUT sin sout known candidate =
-    timeDUT' sin sout $ makeGuess known 5 candidate
+    (timeDUT' sin sout $ makeGuess known 5 candidate) >>= \ x -> case x of
+        Nothing -> return $ Left candidate
+        Just t  -> return $ Right t
 
 
 
