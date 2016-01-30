@@ -42,7 +42,7 @@ timeDUT sin sout known candidate =
 
      -- here, we use use Right [Int] to represent latency results and Left Int to
      -- represent the process under test quitting
-acc test prev digit=
+acc test prev digit =
     case prev of
         Left i  -> return $ Left i
         Right i -> test digit >>= \y -> case y of
