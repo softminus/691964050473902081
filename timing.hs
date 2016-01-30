@@ -24,35 +24,43 @@ main = do
 --    print peaks
 
 
-timeRun sin sout test = do
+timeDUT' sin sout test = do
     hPutStrLn sin test
     start <- getTime Monotonic
     _ <- hGetLine sout
     f <- hGetLine sout
     if f == "Welcome." 
         then 
-            return Nothing                     -- this means we can no longer call timeRun, the process is dead.
+            return Nothing              -- this means we can no longer call timeRun, the process is dead.
         else
             do 
                 end <- getTime Monotonic
                 let diff = timeSpecAsNanoSecs $ diffTimeSpec start end
-                return (Just diff)
+                return $ Just diff
 
-genTimings test known =
-    genTimings' (test . makeGuess known 5) known 
+makeGuess known full unknown  =
+    map intToDigit $ known ++ [unknown] ++ replicate (full - (length known) - 1) 0
 
-genTimings' test known =
-     foldM (acc test) (Right []) [0..9]
+timeDUT sin sout known test =
+    timeDUT' sin sout $ makeGuess known 5 test
+
+
+
+--genTimings test known =
+ --   genTimings' (test . makeGuess known 5) known 
+
+--genTimings' test known =
+--     foldM (acc test) (Right []) [0..9]
 --     mapM (test . makeGuess known 5) $ [0..9]
 
      -- here, we use use Right [Int] to represent latency results and Left Int to
      -- represent the process under test quitting
-acc test res digit =
-    case res of
-        Left i  -> return (Left i)        -- just preserve the bloody thing
-        Right i -> case test digit of
-            Nothing -> return (Left digit)
-            Just j  -> return $ (Right $ i ++ [j])
+--acc test res digit =
+--    case res of
+--        Left i  -> return (Left i)        -- just preserve the bloody thing
+ --       Right i -> case test digit of
+   --         Nothing -> return (Left digit)
+     --       Just j  -> return $ (Right $ i ++ [j])
 
 
 
@@ -61,8 +69,6 @@ findPeak timings =
 
 
 
-makeGuess known full unknown  =
-    map intToDigit $ known ++ [unknown] ++ replicate (full - (length known) - 1) 0
 
 
 -- allPeaks test current =
