@@ -42,9 +42,18 @@ makeGuess known full unknown =
     map intToDigit $ known ++ [unknown] ++ replicate (full - (length known) - 1) 0
 
 timeDUT sin sout known candidate =
-    (timeDUT' sin sout $ makeGuess known 5 candidate) >>= \ x -> case x of
-        Nothing -> return $ Left candidate
-        Just t  -> return $ Right t
+    timeDUT' sin sout $ makeGuess known 5 candidate
+
+
+     -- here, we use use Right [Int] to represent latency results and Left Int to
+     -- represent the process under test quitting
+acc test prev digit =
+    prev >>= \x -> case x of
+        Left i  -> return $ Left i
+        Right i -> test digit >>= \y -> case y of
+            Nothing ->  return $ Left digit
+            Just j  ->  return $ Right $ i ++ [j]
+
 
 
 
@@ -55,14 +64,6 @@ timeDUT sin sout known candidate =
 --     foldM (acc test) (Right []) [0..9]
 --     mapM (test . makeGuess known 5) $ [0..9]
 
-     -- here, we use use Right [Int] to represent latency results and Left Int to
-     -- represent the process under test quitting
---acc test res digit =
---    case res of
---        Left i  -> return (Left i)        -- just preserve the bloody thing
- --       Right i -> case test digit of
-   --         Nothing -> return (Left digit)
-     --       Just j  -> return $ (Right $ i ++ [j])
 
 
 
