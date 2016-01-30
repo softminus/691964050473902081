@@ -51,7 +51,7 @@ acc test prev digit=
 
 
 genTimings test known =
-    foldM (acc $ test known)  ((Right []))  [0..9]
+    foldM (acc $ test known) (Right []) [0..9]
 
 findPeak i =
     elemIndex (maximum i) i
@@ -59,4 +59,4 @@ findPeak i =
 allPeaks test current = do
     genTimings test current >>= \x -> case x of
         Left i  -> return (current ++ [i])
-        Right i -> allPeaks (test) $ (current ++ [fromJust . findPeak $ i])
+        Right i -> allPeaks test $ current ++ [fromJust . findPeak $ i]
