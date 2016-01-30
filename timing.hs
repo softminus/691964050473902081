@@ -17,8 +17,8 @@ main = do
     _  <- hGetLine j
     print "egg"
    -- allPeaks (timeRun i j) []
-    f <-genTimings (timeRun i j) [2,4,6,5]
-    print f 
+  --  f <-genTimings (timeRun i j) [2,4,6,5]
+   --  print f 
     
 
 --    print peaks
@@ -38,8 +38,10 @@ timeRun sin sout test = do
                 let diff = timeSpecAsNanoSecs $ diffTimeSpec start end
                 return (Just diff)
 
-
 genTimings test known =
+    genTimings' (test . makeGuess known 5) known 
+
+genTimings' test known =
      foldM (acc test) (Right []) [0..9]
 --     mapM (test . makeGuess known 5) $ [0..9]
 
@@ -50,7 +52,7 @@ acc test res digit =
         Left i  -> return (Left i)        -- just preserve the bloody thing
         Right i -> case test digit of
             Nothing -> return (Left digit)
-            Just j  -> return (Right $ i ++ [j])
+            Just j  -> return $ (Right $ i ++ [j])
 
 
 
