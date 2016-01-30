@@ -26,7 +26,7 @@ timeDUT' sin sout test = do
     f <- hGetLine sout
     if f == "Welcome." 
         then 
-            return Nothing              -- this means we can no longer call timeRun, the process is dead.
+            return Nothing              -- this means we can no longer call timeDUT' ever again as the process is dead.
         else
             do 
                 end <- getTime Monotonic
