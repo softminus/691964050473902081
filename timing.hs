@@ -13,15 +13,10 @@ main = do
     (Just i, Just j, _, h) <- createProcess (proc "./pass" []){ std_in=CreatePipe, std_out=CreatePipe} 
     hSetBuffering i NoBuffering
     hSetBuffering j NoBuffering
-
     _  <- hGetLine j
-    print "egg"
-   -- allPeaks (timeRun i j) []
-    f <-genTimings' (timeDUT i j) [2,4,6,5]
-    print f 
-    
 
---    print peaks
+    f <- allPeaks (timeDUT i j)  []
+    print f
 
 
 timeDUT' sin sout test = do
@@ -55,29 +50,13 @@ acc test prev digit=
             Just j  ->  return $ Right $ i ++ [j]
 
 
-
-
---genTimings test known =
- --   genTimings' (test . makeGuess known 5) known 
-
-genTimings' test known =
+genTimings test known =
     foldM (acc $ test known)  ((Right []))  [0..9]
 
+findPeak i =
+    elemIndex (maximum i) i
 
-
-
-findPeak timings =
-    elemIndex (maximum timings) timings
-
-
-
-
-
--- allPeaks test current =
---    do
---        next <- fromJust . findPeak <$> genTimings test current
- --       print next
-   --     allPeaks test (current++[next]) 
-
-
-
+allPeaks test current = do
+    genTimings test current >>= \x -> case x of
+        Left i  -> return (current ++ [i])
+        Right i -> allPeaks (test) $ (current ++ [fromJust . findPeak $ i])
