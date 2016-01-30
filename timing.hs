@@ -17,8 +17,8 @@ main = do
     _  <- hGetLine j
     print "egg"
    -- allPeaks (timeRun i j) []
-  --  f <-genTimings (timeRun i j) [2,4,6,5]
-   --  print f 
+    f <-genTimings' (timeDUT i j) [2,4,6,5]
+    print f 
     
 
 --    print peaks
@@ -61,7 +61,7 @@ acc test prev digit=
  --   genTimings' (test . makeGuess known 5) known 
 
 genTimings' test known =
-    foldM (acc test)  ((Right []))  [0..9]
+    foldM (acc $ test known)  ((Right []))  [0..9]
 
 
 
