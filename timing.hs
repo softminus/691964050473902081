@@ -2,6 +2,7 @@ import Debug.Trace
 import Data.Char
 import Data.List
 import Control.Exception
+import Control.Monad
 import Control.Concurrent
 import System.Process 
 import System.IO
@@ -15,7 +16,10 @@ main = do
 
     _  <- hGetLine j
     print "egg"
-    allPeaks (timeRun i j) []
+   -- allPeaks (timeRun i j) []
+    f <-genTimings (timeRun i j) [2,4,6,5]
+    print f 
+    
 
 --    print peaks
 
@@ -27,27 +31,43 @@ timeRun sin sout test = do
     f <- hGetLine sout
     if f == "Welcome." 
         then 
-            print test
-            else
-                return ()
-    end <- getTime Monotonic
-    let diff = timeSpecAsNanoSecs $ diffTimeSpec start end
-    return diff
+            return Nothing                     -- this means we can no longer call timeRun, the process is dead.
+        else
+            do 
+                end <- getTime Monotonic
+                let diff = timeSpecAsNanoSecs $ diffTimeSpec start end
+                return (Just diff)
 
-makeGuess known full unknown  =
-    map intToDigit $ known ++ [unknown] ++ replicate (full - (length known) - 1) 0
 
-genTimings test sofar =
-     mapM (test . makeGuess sofar 5) $ [0..9]
+genTimings test known =
+     foldM (acc test) (Right []) [0..9]
+--     mapM (test . makeGuess known 5) $ [0..9]
+
+     -- here, we use use Right [Int] to represent latency results and Left Int to
+     -- represent the process under test quitting
+acc test res digit =
+    case res of
+        Left i  -> return (Left i)        -- just preserve the bloody thing
+        Right i -> case test digit of
+            Nothing -> return (Left digit)
+            Just j  -> return (Right $ i ++ [j])
+
+
 
 findPeak timings =
     elemIndex (maximum timings) timings
 
-allPeaks test current =
-    do
-        next <- fromJust . findPeak <$> genTimings test current
-        print next
-        allPeaks test (current++[next]) 
+
+
+makeGuess known full unknown  =
+    map intToDigit $ known ++ [unknown] ++ replicate (full - (length known) - 1) 0
+
+
+-- allPeaks test current =
+--    do
+--        next <- fromJust . findPeak <$> genTimings test current
+ --       print next
+   --     allPeaks test (current++[next]) 
 
 
 
