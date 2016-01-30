@@ -38,11 +38,11 @@ timeDUT' sin sout test = do
                 let diff = timeSpecAsNanoSecs $ diffTimeSpec start end
                 return $ Just diff
 
-makeGuess known full unknown  =
+makeGuess known full unknown=
     map intToDigit $ known ++ [unknown] ++ replicate (full - (length known) - 1) 0
 
-timeDUT sin sout known test =
-    timeDUT' sin sout $ makeGuess known 5 test
+timeDUT sin sout known candidate=
+    timeDUT' sin sout $ makeGuess known 5 candidate
 
 
 
