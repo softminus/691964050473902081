@@ -56,7 +56,7 @@ genTimings test known =
 findPeak i =
     elemIndex (maximum i) i
 
-allPeaks test current = do
+allPeaks test current =
     genTimings test current >>= \x -> case x of
         Left i  -> return (current ++ [i])
         Right i -> allPeaks test $ current ++ [fromJust . findPeak $ i]
